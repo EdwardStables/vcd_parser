@@ -4,27 +4,34 @@ options {
 	tokenVocab = VCDLexer;
 }
 
-stat: expr Equal expr Semicolon
-    | expr Semicolon
-;
 
-expr: expr Star expr
-    | expr Plus expr
-    | OpenPar expr ClosePar
-    | <assoc = right> expr QuestionMark expr Colon expr
-    | <assoc = right> expr Equal expr
-    | identifier = id
-    | flowControl
-    | INT
-    | String
-;
+value_change_dump_definitions: declaration_command* simulation_command*;
+declaration_command: declaration_keyword Text End;
+declaration_keyword: Comment
+                    | Date
+                    | EndDef
+                    | Scope
+                    | Timescale
+                    | UpScope
+                    | Var
+                    | Version;
 
-flowControl:
-	Return expr # Return
-	| Continue # Continue
-;
+simulation_command:
+    simulation_keyword value_change* End
+  | Comment Text End
+  | simulation_time
+  | value_change;
+    
+simulation_keyword: Dumpall
+                  | Dumpoff
+                  | Dumpon
+                  | Dumpvars;
 
-id: ID;
-array : OpenCurly el += INT (Comma el += INT)* CloseCurly;
-idarray : OpenCurly element += id (Comma element += id)* CloseCurly;
-any: t = .;
+simulation_time: Hash DecimalNumber;
+
+value_change: scalar_value_change | vector_value_change; 	    
+
+scalar_value_change: Value IdentifierCode;
+vector_value_change:
+    BinaryId BinaryNumber IdentifierCode |
+    RealId RealNumber IdentifierCode;

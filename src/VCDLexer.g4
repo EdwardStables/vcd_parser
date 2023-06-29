@@ -1,49 +1,30 @@
 lexer grammar VCDLexer;
 
-tokens {
-	DUMMY	
-}
+Text: [0-9a-zA-Z_ ];
+End:        '$end';
+Comment:    '$comment';
+Date:       '$date';
+EndDef:     '$enddefinitions';
+Scope:      '$scope';
+Timescale:  '$timescale';
+UpScope:    '$upscope';
+Var:        '$var';
+Version:    '$version';
+Dumpall:    '$dumpall'; 
+Dumpoff:    '$dumpoff'; 
+Dumpon:     '$dumpon';  
+Dumpvars:   '$dumpvars';  
 
-Return: 'return';
-Continue: 'continue';
+Hash: '#';
+DecimalNumber: [1-9][0-9]*;
 
-INT: Digit+;
-Digit: [0-9];
+Value: '0' | '1' | 'x' | 'X' | 'z' | 'Z';
+IdentifierCode: [\u0000-\u00FF]+;
 
-ID: LETTER (LETTER | '0'..'9')*;
-fragment LETTER : [a-zA-Z\u0080-\uFFFF];
+BinaryId: 'b' | 'B';
+RealId: 'r' | 'R';
 
-LessThan: '<';
-GreaterThan:  '>';
-Equal: '=';
-And: 'and';
+BinaryNumber: ('0' | '1')+;
+RealNumber: [0-9]+'.'[0-9]+ | [0-9]+'e'('+'|'-')[0-9]+;
 
-Colon: ':';
-Semicolon: ';';
-Plus: '+';
-Minus: '-';
-Star: '*';
-OpenPar: '(';
-ClosePar: ')';
-OpenCurly: '{';
-CloseCurly: '}';
-QuestionMark: '?';
-Comma: ',';
-Dollar: '$';
-Ampersand: '&';
- 
-String: '"' .*? '"';
-Foo: {canTestFoo()}? 'foo' {isItFoo()}? { myFooLexerAction(); };
-Bar: 'bar' {isItBar()}? { myBarLexerAction(); };
-Any: Foo Dot Bar? DotDot Baz;
-
-Comment : '#' ~[\r\n]* '\r'? '\n';
-WS: [ \t\r\n]+;
-
-fragment Baz: 'Baz';
-
-mode Mode1;
-Dot: '.';
-
-mode Mode2;
-DotDot: '..';
+Whitespace: [ \t\r\n]+ -> skip;
