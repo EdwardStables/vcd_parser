@@ -17,11 +17,10 @@ antlr4cpp_process_grammar(demo ${ANTLR4NAMESPACE}
   ${CMAKE_CURRENT_SOURCE_DIR}/src/VCDParser.g4
 )
 
-
 add_executable(vcdp
     src/main.cpp
     src/listener.cpp
-    ${antlr4cpp_include_dirs_antlrcpp}
+    ${antlr4cpp_src_files_${ANTLR4NAMESPACE}}
 )
 
 target_include_directories( vcdp
