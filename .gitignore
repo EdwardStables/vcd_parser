@@ -1,3 +1,4 @@
+.vscode
 build/
 thirdparty/antlr-*.jar
 CMakeFiles
@@ -9,3 +10,4 @@ locals
 src/.antlr
 thirdparty
 !thirdpart/.keepme
+vcdp
