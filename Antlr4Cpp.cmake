@@ -1,74 +1,16 @@
-# -*- mode:cmake -*-
-#
-# This Cmake file is for those using a superbuild Cmake Pattern, it
-# will download the tools and build locally
-#
-# use 2the antlr4cpp_process_grammar to support multiple grammars in the
-# same project
-#
-# - Getting quicky started with Antlr4cpp
-#
-# Here is how you can use this external project to create the antlr4cpp
-# demo to start your project off.
-#
-# create your project source folder somewhere. e.g. ~/srcfolder/
-# + make a subfolder cmake
-# + Copy this file to srcfolder/cmake
-# + cut below and use it to create srcfolder/CMakeLists.txt,
-# + from https://github.com/DanMcLaughlin/antlr4/tree/master/runtime/Cpp/demo Copy main.cpp, TLexer.g4 and TParser.g4 to ./srcfolder/
-#
-# next make a build folder e.g. ~/buildfolder/
-# from the buildfolder, run cmake ~/srcfolder; make
-#
-###############################################################
-# # minimum required CMAKE version
-# CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12.2 FATAL_ERROR)
-#
-# LIST( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake )
-#
-# # compiler must be 11 or 14
-# SET (CMAKE_CXX_STANDARD 11)
-#
-# # set variable pointing to the antlr tool that supports C++
-# set(ANTLR4CPP_JAR_LOCATION /home/user/antlr4-4.5.4-SNAPSHOT.jar)
-# # add external build for antlrcpp
-# include( ExternalAntlr4Cpp )
-# # add antrl4cpp artifacts to project environment
-# include_directories( ${ANTLR4CPP_INCLUDE_DIRS} )
-# link_directories( ${ANTLR4CPP_LIBS} )
-# message(STATUS "Found antlr4cpp libs: ${ANTLR4CPP_LIBS} and includes: ${ANTLR4CPP_INCLUDE_DIRS} ")
-#
-# # Call macro to add lexer and grammar to your build dependencies.
-# antlr4cpp_process_grammar(demo antlrcpptest
-#   ${CMAKE_CURRENT_SOURCE_DIR}/TLexer.g4
-#   ${CMAKE_CURRENT_SOURCE_DIR}/TParser.g4)
-# # include generated files in project environment
-# include_directories(${antlr4cpp_include_dirs_antlrcpptest})
-#
-# # add generated grammar to demo binary target
-# add_executable(demo main.cpp ${antlr4cpp_src_files_antlrcpptest})
-# add_dependencies(demo antlr4cpp antlr4cpp_generation_antlrcpptest)
-# target_link_libraries(demo antlr4-runtime)
-#
-###############################################################
+# Adapted from cmake file provided by blorente: https://github.com/blorente/antlr-4.7-cpp-cmake-base
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12.2)
 PROJECT(antlr4cpp_fetcher CXX)
 INCLUDE(ExternalProject)
-FIND_PACKAGE(Git REQUIRED)
 
-# only JRE required
+FIND_PACKAGE(Git REQUIRED)
 FIND_PACKAGE(Java COMPONENTS Runtime REQUIRED)
 
-############ Download and Generate runtime #################
-set(ANTLR4CPP_EXTERNAL_ROOT ${CMAKE_BINARY_DIR}/externals/antlr4cpp)
-set(ANTLR4CPP_LOCAL_ROOT ${CMAKE_BINARY_DIR}/locals/antlr4cpp)
-
 # external repository
-# GIT_REPOSITORY     https://github.com/antlr/antlr4.git
-set(ANTLR4CPP_EXTERNAL_REPO "https://github.com/antlr/antlr4.git")
-set(ANTLR4CPP_EXTERNAL_TAG  "4.7")
-SET(ANTLR4CPP_LOCAL_REPO ${PROJECT_SOURCE_DIR}/thirdparty/antlr/antlr4-master.zip)
+set(ANTLR4CPP_EXTERNAL_REPO "https://github.com/antlr/antlr4")
+set(ANTLR4CPP_EXTERNAL_TAG ${ANTLR4_VERSION})
+set(ANTLR4CPP_EXTERNAL_ZIP ${ANTLR4CPP_EXTERNAL_REPO}/archive/refs/tags/${ANTLR4CPP_EXTERNAL_TAG}.zip)
 
 if(NOT EXISTS "${ANTLR4CPP_JAR_LOCATION}")
   message(FATAL_ERROR "Unable to find antlr tool. ANTLR4CPP_JAR_LOCATION:${ANTLR4CPP_JAR_LOCATION}")
@@ -80,14 +22,18 @@ if (NOT ANTLR4CPP_GENERATED_SRC_DIR)
 endif()
 
 # download runtime environment
-ExternalProject_ADD(
+ExternalProject_Add(
   antlr4cpp
-  URL                 https://github.com/antlr/antlr4/archive/refs/tags/4.13.0.zip
+  #For automatically fetching the zip
+  URL                ${ANTLR4CPP_EXTERNAL_ZIP}
+  #For offline builds
+  #URL                my_local_download_path.zip
   TIMEOUT            10
   LOG_DOWNLOAD       ON
   CONFIGURE_COMMAND  ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Release -DANTLR4CPP_JAR_LOCATION=${ANTLR4CPP_JAR_LOCATION} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> -DCMAKE_SOURCE_DIR:PATH=<SOURCE_DIR>/runtime/Cpp <SOURCE_DIR>/runtime/Cpp
   LOG_CONFIGURE ON
   LOG_BUILD ON
+  DOWNLOAD_EXTRACT_TIMESTAMP false
 )
 
 ExternalProject_Get_Property(antlr4cpp INSTALL_DIR)
@@ -98,9 +44,6 @@ foreach(src_path misc atn dfa tree support)
 endforeach(src_path)
 
 set(ANTLR4CPP_LIBS "${INSTALL_DIR}/lib")
-
-# antlr4_shared ${INSTALL_DIR}/lib/libantlr4-runtime.so
-# antlr4_static ${INSTALL_DIR}/lib/libantlr4-runtime.a
 
 ############ Generate runtime #################
 # macro to add dependencies to target
@@ -116,11 +59,13 @@ set(ANTLR4CPP_LIBS "${INSTALL_DIR}/lib")
 # antlr4cpp_include_dirs_{namespace} - include dir for generated headers
 # antlr4cpp_generation_{namespace} - for add_dependencies tracking
 
-macro(antlr4cpp_process_grammar
-    antlr4cpp_project
-    antlr4cpp_project_namespace
-    antlr4cpp_grammar_lexer
-    antlr4cpp_grammar_parser)
+macro(
+  antlr4cpp_process_grammar
+  antlr4cpp_project
+  antlr4cpp_project_namespace
+  antlr4cpp_grammar_lexer
+  antlr4cpp_grammar_parser
+)
 
   if(EXISTS "${ANTLR4CPP_JAR_LOCATION}")
     message(STATUS "Found antlr tool: ${ANTLR4CPP_JAR_LOCATION}")

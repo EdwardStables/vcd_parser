@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 3.10)
 project(vcd_parser)
 set(CMAKE_CXX_STANDARD 17)
 
-# ANTLR #
-LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-set(ANTLR4CPP_JAR_LOCATION ${PROJECT_SOURCE_DIR}/thirdparty/antlr-4.13.0-complete.jar)
-include( ExternalAntlr4Cpp )
+# ANTLR
+set(ANTLR4_VERSION 4.13.0)
+
+set(ANTLR4CPP_JAR_LOCATION ${PROJECT_SOURCE_DIR}/antlr-${ANTLR4_VERSION}-complete.jar)
+include(Antlr4Cpp.cmake)
 include_directories( ${ANTLR4CPP_INCLUDE_DIRS} )
 link_directories( ${ANTLR4CPP_LIBS} )
 message(STATUS "Found antlr4cpp libs: ${ANTLR4CPP_LIBS} and includes: ${ANTLR4CPP_INCLUDE_DIRS} ")
