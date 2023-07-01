@@ -8,7 +8,7 @@ Makefile
 antlr4cpp_generated_src
 locals
 src/.antlr
+antlr4cpp-prefix
 thirdparty
-!thirdpart/.keepme
 vcdp
 samples

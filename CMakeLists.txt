@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # ANTLR #
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-set(ANTLR4CPP_JAR_LOCATION ${PROJECT_SOURCE_DIR}/thirdparty/antlr/antlr-4.13.0-complete.jar)
+set(ANTLR4CPP_JAR_LOCATION ${PROJECT_SOURCE_DIR}/thirdparty/antlr-4.13.0-complete.jar)
 include( ExternalAntlr4Cpp )
 include_directories( ${ANTLR4CPP_INCLUDE_DIRS} )
 link_directories( ${ANTLR4CPP_LIBS} )
@@ -12,7 +12,7 @@ message(STATUS "Found antlr4cpp libs: ${ANTLR4CPP_LIBS} and includes: ${ANTLR4CP
 
 set(ANTLR4NAMESPACE antlrvcdp)
 
-antlr4cpp_process_grammar(demo ${ANTLR4NAMESPACE}
+antlr4cpp_process_grammar(vcdp ${ANTLR4NAMESPACE}
   ${CMAKE_CURRENT_SOURCE_DIR}/src/VCDLexer.g4
   ${CMAKE_CURRENT_SOURCE_DIR}/src/VCDParser.g4
 )

@@ -81,33 +81,13 @@ endif()
 
 # download runtime environment
 ExternalProject_ADD(
-  #--External-project-name------
   antlr4cpp
-  #--Depend-on-antrl-tool-----------
-  # DEPENDS antlrtool
-  #--Core-directories-----------
-  PREFIX             ${ANTLR4CPP_LOCAL_ROOT}
-  #--Download step--------------
-  URL                 ${ANTLR4CPP_LOCAL_REPO}
-  # GIT_REPOSITORY     ${ANTLR4CPP_EXTERNAL_REPO}
-  # GIT_TAG          ${ANTLR4CPP_EXTERNAL_TAG}
+  URL                 https://github.com/antlr/antlr4/archive/refs/tags/4.13.0.zip
   TIMEOUT            10
   LOG_DOWNLOAD       ON
-  #--Update step----------
-  # UPDATE_COMMAND     ${GIT_EXECUTABLE} pull
-  #--Patch step----------
-  # PATCH_COMMAND sh -c "cp <SOURCE_DIR>/scripts/CMakeLists.txt <SOURCE_DIR>"
-  #--Configure step-------------
   CONFIGURE_COMMAND  ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Release -DANTLR4CPP_JAR_LOCATION=${ANTLR4CPP_JAR_LOCATION} -DBUILD_SHARED_LIBS=ON -DBUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> -DCMAKE_SOURCE_DIR:PATH=<SOURCE_DIR>/runtime/Cpp <SOURCE_DIR>/runtime/Cpp
   LOG_CONFIGURE ON
-  #--Build step-----------------
-  # BUILD_COMMAND ${CMAKE_MAKE_PROGRAM}
   LOG_BUILD ON
-  #--Install step---------------
-  # INSTALL_COMMAND    ""
-  # INSTALL_DIR ${CMAKE_BINARY_DIR}/
-  #--Install step---------------
-  # INSTALL_COMMAND    ""
 )
 
 ExternalProject_Get_Property(antlr4cpp INSTALL_DIR)
