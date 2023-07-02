@@ -44,7 +44,6 @@ foreach(src_path misc atn dfa tree support)
 endforeach(src_path)
 
 set(ANTLR4CPP_LIBS "${INSTALL_DIR}/lib")
-set(ANTLRGEN ${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace})
 
 ############ Generate runtime #################
 # macro to add dependencies to target
@@ -69,6 +68,7 @@ macro(
   lexer_name
   parser_name
 )
+  set(ANTLRGEN ${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace})
 
   if(EXISTS "${ANTLR4CPP_JAR_LOCATION}")
     message(STATUS "Found antlr tool: ${ANTLR4CPP_JAR_LOCATION}")
