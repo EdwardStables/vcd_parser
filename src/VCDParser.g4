@@ -5,8 +5,9 @@ options {
 }
 
 
-value_change_dump_definitions: declaration_command* simulation_command*;
-declaration_command: declaration_keyword Text End;
+value_change_dump_definitions: declaration_command+ simulation_command+;
+declaration_command: declaration_keyword text End;
+text: AsciiChar+; 
 declaration_keyword: Comment
                     | Date
                     | EndDef
@@ -18,7 +19,7 @@ declaration_keyword: Comment
 
 simulation_command:
     simulation_keyword value_change* End
-  | Comment Text End
+  | Comment text End
   | simulation_time
   | value_change;
     
@@ -31,7 +32,8 @@ simulation_time: Hash DecimalNumber;
 
 value_change: scalar_value_change | vector_value_change; 	    
 
-scalar_value_change: Value IdentifierCode;
+scalar_value_change: Value identifier_code;
 vector_value_change:
-    BinaryId BinaryNumber IdentifierCode |
-    RealId RealNumber IdentifierCode;
+    BinaryId BinaryNumber identifier_code|
+    RealId RealNumber identifier_code;
+identifier_code: AsciiChar+; 
