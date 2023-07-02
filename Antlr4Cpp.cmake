@@ -44,6 +44,7 @@ foreach(src_path misc atn dfa tree support)
 endforeach(src_path)
 
 set(ANTLR4CPP_LIBS "${INSTALL_DIR}/lib")
+set(ANTLRGEN ${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace})
 
 ############ Generate runtime #################
 # macro to add dependencies to target
@@ -65,6 +66,8 @@ macro(
   antlr4cpp_project_namespace
   antlr4cpp_grammar_lexer
   antlr4cpp_grammar_parser
+  lexer_name
+  parser_name
 )
 
   if(EXISTS "${ANTLR4CPP_JAR_LOCATION}")
@@ -73,17 +76,40 @@ macro(
     message(FATAL_ERROR "Unable to find antlr tool. ANTLR4CPP_JAR_LOCATION:${ANTLR4CPP_JAR_LOCATION}")
   endif()
 
-  add_custom_target("antlr4cpp_generation_${antlr4cpp_project_namespace}"
-    COMMAND
-    ${CMAKE_COMMAND} -E make_directory ${ANTLR4CPP_GENERATED_SRC_DIR}
-    COMMAND
-    "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4CPP_JAR_LOCATION}" -Werror -Dlanguage=Cpp -listener -visitor -o "${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace}" -package ${antlr4cpp_project_namespace} "${antlr4cpp_grammar_lexer}" "${antlr4cpp_grammar_parser}"
+  #modify file list as appropriate
+  set(ANTLRFILES
+    ${ANTLRGEN}/${lexer_name}.cpp;
+    ${ANTLRGEN}/${lexer_name}.h;
+    ${ANTLRGEN}/${lexer_name}.interp;
+    ${ANTLRGEN}/${lexer_name}.tokens;
+    ${ANTLRGEN}/${parser_name}.cpp;
+    ${ANTLRGEN}/${parser_name}.h;
+    ${ANTLRGEN}/${parser_name}.interp;
+    ${ANTLRGEN}/${parser_name}.tokens;
+    ${ANTLRGEN}/${parser_name}BaseListener.cpp;
+    ${ANTLRGEN}/${parser_name}BaseListener.h;
+    ${ANTLRGEN}/${parser_name}BaseVisitor.cpp;
+    ${ANTLRGEN}/${parser_name}BaseVisitor.h;
+    ${ANTLRGEN}/${parser_name}Listener.cpp;
+    ${ANTLRGEN}/${parser_name}Listener.h;
+    ${ANTLRGEN}/${parser_name}Visitor.cpp;
+    ${ANTLRGEN}/${parser_name}Visitor.h
+  )
+
+  add_custom_command(
+    OUTPUT ${ANTLRFILES}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${ANTLR4CPP_GENERATED_SRC_DIR}
+    COMMAND "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4CPP_JAR_LOCATION}" -Werror -Dlanguage=Cpp -listener -visitor -o "${ANTLRGEN}" -package ${antlr4cpp_project_namespace} "${antlr4cpp_grammar_lexer}" "${antlr4cpp_grammar_parser}"
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
     DEPENDS "${antlr4cpp_grammar_lexer}" "${antlr4cpp_grammar_parser}"
-    )
+  )
+
+  add_custom_target("antlr4cpp_generation_${antlr4cpp_project_namespace}"
+    DEPENDS ${ANTLRFILES}
+  )
 
   # Find all the input files
-  FILE(GLOB generated_files ${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace}/*.cpp)
+  FILE(GLOB generated_files ${ANTLRGEN}/*.cpp)
 
   # export generated cpp files into list
   foreach(generated_file ${generated_files})

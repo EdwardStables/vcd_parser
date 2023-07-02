@@ -16,6 +16,8 @@ set(ANTLR4NAMESPACE antlrvcdp)
 antlr4cpp_process_grammar(vcdp ${ANTLR4NAMESPACE}
   ${CMAKE_CURRENT_SOURCE_DIR}/src/VCDLexer.g4
   ${CMAKE_CURRENT_SOURCE_DIR}/src/VCDParser.g4
+  VCDLexer
+  VCDParser
 )
 
 add_executable(vcdp
@@ -28,6 +30,9 @@ target_include_directories( vcdp
   PRIVATE headers
   PRIVATE antlr4cpp_generated_src/${ANTLR4NAMESPACE}
 )
-add_dependencies(vcdp antlr4cpp antlr4cpp_generation_antlrvcdp)
+add_dependencies(vcdp
+  antlr4cpp
+  antlr4cpp_generation_${ANTLR4NAMESPACE}
+)
 target_link_libraries(vcdp antlr4-runtime)
 
