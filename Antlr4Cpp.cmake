@@ -60,7 +60,7 @@ set(ANTLR4CPP_LIBS "${INSTALL_DIR}/lib")
 # antlr4cpp_generation_{namespace} - for add_dependencies tracking
 
 macro(
-  antlr4cpp_process_grammar
+  antlr4cpp_two_file_process
   antlr4cpp_project
   antlr4cpp_project_namespace
   antlr4cpp_grammar_lexer
@@ -102,6 +102,71 @@ macro(
     COMMAND "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4CPP_JAR_LOCATION}" -Werror -Dlanguage=Cpp -listener -visitor -o "${ANTLRGEN}" -package ${antlr4cpp_project_namespace} "${antlr4cpp_grammar_lexer}" "${antlr4cpp_grammar_parser}"
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
     DEPENDS "${antlr4cpp_grammar_lexer}" "${antlr4cpp_grammar_parser}"
+  )
+
+  add_custom_target("antlr4cpp_generation_${antlr4cpp_project_namespace}"
+    DEPENDS ${ANTLRFILES}
+  )
+
+  # Find all the input files
+  FILE(GLOB generated_files ${ANTLRGEN}/*.cpp)
+
+  # export generated cpp files into list
+  foreach(generated_file ${generated_files})
+    list(APPEND antlr4cpp_src_files_${antlr4cpp_project_namespace} ${generated_file})
+    set_source_files_properties(
+      ${generated_file}
+      PROPERTIES
+      COMPILE_FLAGS -Wno-overloaded-virtual
+      )
+  endforeach(generated_file)
+  message(STATUS "Antlr4Cpp  ${antlr4cpp_project_namespace} Generated: ${generated_files}")
+
+  # export generated include directory
+  set(antlr4cpp_include_dirs_${antlr4cpp_project_namespace} ${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace})
+  message(STATUS "Antlr4Cpp ${antlr4cpp_project_namespace} include: ${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace}")
+
+endmacro()
+
+macro(
+  antlr4cpp_one_file_process
+  antlr4cpp_project
+  antlr4cpp_project_namespace
+  antlr4cpp_grammar
+  grammar_name
+)
+  set(ANTLRGEN ${ANTLR4CPP_GENERATED_SRC_DIR}/${antlr4cpp_project_namespace})
+
+  if(EXISTS "${ANTLR4CPP_JAR_LOCATION}")
+    message(STATUS "Found antlr tool: ${ANTLR4CPP_JAR_LOCATION}")
+  else()
+    message(FATAL_ERROR "Unable to find antlr tool. ANTLR4CPP_JAR_LOCATION:${ANTLR4CPP_JAR_LOCATION}")
+  endif()
+
+  #modify file list as appropriate
+  set(ANTLRFILES
+    ${ANTLRGEN}/${grammar_name}Parser.cpp;
+    ${ANTLRGEN}/${grammar_name}Parser.h;
+    ${ANTLRGEN}/${grammar_name}Lexer.cpp;
+    ${ANTLRGEN}/${grammar_name}Lexer.h;
+    ${ANTLRGEN}/${grammar_name}Lexer.interp;
+    ${ANTLRGEN}/${grammar_name}Lexer.tokens;
+    ${ANTLRGEN}/${grammar_name}BaseListener.cpp;
+    ${ANTLRGEN}/${grammar_name}BaseListener.h;
+    ${ANTLRGEN}/${grammar_name}BaseVisitor.cpp;
+    ${ANTLRGEN}/${grammar_name}BaseVisitor.h;
+    ${ANTLRGEN}/${grammar_name}Listener.cpp;
+    ${ANTLRGEN}/${grammar_name}Listener.h;
+    ${ANTLRGEN}/${grammar_name}Visitor.cpp;
+    ${ANTLRGEN}/${grammar_name}Visitor.h
+  )
+
+  add_custom_command(
+    OUTPUT ${ANTLRFILES}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${ANTLR4CPP_GENERATED_SRC_DIR}
+    COMMAND "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4CPP_JAR_LOCATION}" -Werror -Dlanguage=Cpp -listener -visitor -o "${ANTLRGEN}" -package ${antlr4cpp_project_namespace} "${antlr4cpp_grammar}"
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+    DEPENDS "${antlr4cpp_grammar}"
   )
 
   add_custom_target("antlr4cpp_generation_${antlr4cpp_project_namespace}"

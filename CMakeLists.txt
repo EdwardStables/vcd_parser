@@ -13,11 +13,9 @@ message(STATUS "Found antlr4cpp libs: ${ANTLR4CPP_LIBS} and includes: ${ANTLR4CP
 
 set(ANTLR4NAMESPACE antlrvcdp)
 
-antlr4cpp_process_grammar(vcdp ${ANTLR4NAMESPACE}
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/VCDLexer.g4
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/VCDParser.g4
-  VCDLexer
-  VCDParser
+antlr4cpp_one_file_process(vcdp ${ANTLR4NAMESPACE}
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/vcd.g4
+  vcd
 )
 
 add_executable(vcdp
