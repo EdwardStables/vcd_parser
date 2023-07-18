@@ -1,8 +1,8 @@
 #include "main.h"
 #include <iostream>
 #include "antlr4-runtime.h"
-#include "VCDParser.h"
-#include "VCDLexer.h"
+#include "vcdParser.h"
+#include "vcdLexer.h"
 #include "listener.h"
 #include <fstream>
 #include <filesystem>
@@ -11,6 +11,7 @@ namespace a4 = antlr4;
 
 std::string read_file(const std::filesystem::path path){
     std::ifstream inf{path};
+
 
     if (!inf){
         std::cerr << "Could not open file " << path << " for reading." << std::endl;
@@ -26,14 +27,15 @@ std::string read_file(const std::filesystem::path path){
 int main() {
     std::string content = read_file("samples/wikipedia_example.vcd");
     a4::ANTLRInputStream* input_stream = new a4::ANTLRInputStream(content);
-    antlrvcdp::VCDLexer* lexer = new antlrvcdp::VCDLexer(input_stream);
+    antlrvcdp::vcdLexer* lexer = new antlrvcdp::vcdLexer(input_stream);
     a4::CommonTokenStream* tokenstream = new a4::CommonTokenStream(lexer);
     tokenstream->fill();
-    antlrvcdp::VCDParser* parser = new antlrvcdp::VCDParser(tokenstream);
+
+    antlrvcdp::vcdParser* parser = new antlrvcdp::vcdParser(tokenstream);
 
     a4::tree::ParseTreeWalker walker;
-    VCDListener listener;
-    walker.walk(&listener, parser->value_change_dump_definitions());
+    vcdListener* listener = new vcdListener();
+    walker.walk(listener, parser->value_change_dump_definitions());
 
     return 0;
 }
