@@ -11,8 +11,7 @@ struct BinaryStore {
     std::vector<bool> z_vector;
     int size;
 
-    BinaryStore(std::string);
-    BinaryStore(int, char);
+    BinaryStore(int size, std::string bit_string);
     std::string as_string();
     char char_at(int ind);
     bool b_at(int ind);

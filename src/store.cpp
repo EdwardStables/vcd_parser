@@ -4,8 +4,11 @@
 #include <iterator>
 #include <sstream>
 
-BinaryStore::BinaryStore(std::string bit_string) {
-    size = bit_string.size();
+BinaryStore::BinaryStore(int _size, std::string bit_string) : size(_size) {
+    while (bit_string.size() < size){
+        bit_string = '0' + bit_string;
+    }
+
     for (int i = size-1; i >= 0; i--){
         char c = bit_string[i];
         if (c == 'x' || c == 'X'){
@@ -31,31 +34,6 @@ BinaryStore::BinaryStore(std::string bit_string) {
     }
 }
 
-BinaryStore::BinaryStore(int size, char def) {
-    this->size = size;
-    for (int i = 0; i < size; i++){
-        if (def == 'x' || def == 'X'){
-            b_vector.push_back(false);
-            x_vector.push_back(true);
-            z_vector.push_back(false);
-        } else
-        if (def == 'z' || def == 'Z'){
-            b_vector.push_back(false);
-            x_vector.push_back(false);
-            z_vector.push_back(true);
-        } else
-        if (def == '0'){
-            b_vector.push_back(false);
-            x_vector.push_back(false);
-            z_vector.push_back(false);
-        } else
-        if (def == '1'){
-            b_vector.push_back(true);
-            x_vector.push_back(false);
-            z_vector.push_back(false);
-        }
-    }
-}
 
 std::string BinaryStore::as_string() {
     std::string out;
@@ -255,7 +233,16 @@ Scope* Store::get_top() {
 }
 
 void Store::scalar_binary_change(std::string val){
-    BinaryStore b(1, val[0]);
+    std::string id = val.substr(1);
+
+    if (!identifier_code_to_var.count(id)){
+        std::cerr << "Identifier '" << id << "' is unknown. Skipping";
+        return;
+    }
+
+    int size = identifier_code_to_var[id]->size;
+    BinaryStore b(size, val.substr(0,1));
+
     std::cout << val.substr(1) << " is " << b.as_string() << std::endl;
 }
 
@@ -264,8 +251,14 @@ void Store::vector_binary_change(std::string val){
     std::string vec = vec_id[0];
     std::string id = vec_id[1];
 
+    if (!identifier_code_to_var.count(id)){
+        std::cerr << "Identifier '" << id << "' is unknown. Skipping";
+        return;
+    }
 
-    BinaryStore b(vec.substr(1));
+    int size = identifier_code_to_var[id]->size;
+
+    BinaryStore b(size, vec.substr(1));
     std::cout << id << " is " << b.as_string() << std::endl;
 }
 
