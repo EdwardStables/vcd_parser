@@ -26,7 +26,7 @@ std::string read_file(const std::filesystem::path path){
 }
 
 int main() {
-    std::string content = read_file("../samples/spec_example.vcd");
+    std::string content = read_file("../samples/scoping_example.vcd");
     a4::ANTLRInputStream* input_stream = new a4::ANTLRInputStream(content);
     antlrvcdp::vcdLexer* lexer = new antlrvcdp::vcdLexer(input_stream);
     a4::CommonTokenStream* tokenstream = new a4::CommonTokenStream(lexer);

@@ -37,7 +37,12 @@ Scope::Scope(std::string scope_str){
 }
 
 void Store::down_scope(Scope* scope){
-    if (top_scope == nullptr){
+    if (top_scope && !current_scope){
+        std::cerr << "Multiple top level scopes present. Not supported." << std::endl;
+        exit(1);
+    }
+
+    if (!top_scope){
         top_scope = scope;
         current_scope = scope;
         return;
@@ -48,18 +53,16 @@ void Store::down_scope(Scope* scope){
         exit(1);
     }
 
+    scope->parent_scope = current_scope;
     current_scope->child_scopes[scope->name] = scope;
     current_scope = scope;
 }
 
 void Store::up_scope() {
-    if (current_scope->parent_scope){
+    if (!current_scope){ 
+        std::cerr << "Unexpected additional $endscope. Ignoring.\n";
+    } else {
         current_scope = current_scope->parent_scope;
-        return;
-    }
-    
-    if (current_scope == top_scope){ 
-        std::cerr << "Unexpected additional $endscope. Ignoring.";
     }
 }
 
