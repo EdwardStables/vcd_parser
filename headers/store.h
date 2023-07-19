@@ -1,6 +1,28 @@
 #pragma once
 #include <unordered_map>
 #include <string>
+#include <tuple>
+#include <vector>
+
+//TODO: probably refactor to a template?
+struct BinaryStore {
+    std::vector<bool> b_vector;
+    std::vector<bool> x_vector;
+    std::vector<bool> z_vector;
+    int size;
+
+    BinaryStore(std::string);
+    BinaryStore(int, char);
+    std::string as_string();
+    char char_at(int ind);
+    bool b_at(int ind);
+    bool x_at(int ind);
+    bool z_at(int ind);
+
+private:
+    //b, x, z
+    std::tuple<bool,bool,bool> at(int ind);
+};
 
 struct Var;
 
@@ -51,4 +73,7 @@ struct Store {
     void up_scope();
     void add_var(Var*);
     Scope* get_top();
+    void scalar_binary_change(std::string);
+    void vector_binary_change(std::string val);
+    void vector_real_change(std::string val);
 };

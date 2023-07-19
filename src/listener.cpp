@@ -29,11 +29,20 @@ vcdListener::vcdListener(Store* store)
 //
 //void vcdListener::enterSimulation_directive(antlrvcdp::vcdParser::Simulation_directiveContext* ctx){
 //}
-void vcdListener::enterVar(antlrvcdp::vcdParser::VarContext* ctx) {
-    store->add_var(new Var(extract_inner(ctx->getText(), "$var")));
+void vcdListener::enterScalar_change(antlrvcdp::vcdParser::Scalar_changeContext* ctx) {
+    store->scalar_binary_change(ctx->getText());
 }
 
-void vcdListener::enterScalar_change(antlrvcdp::vcdParser::Scalar_changeContext* ctx) {
+void vcdListener::enterVector_change(antlrvcdp::vcdParser::Vector_changeContext* ctx) {
+    std::string t = ctx->getText();
+    if (t[0] == 'b' || t[0] == 'B')
+        store->vector_binary_change(t);
+    else if (t[0] == 'r' || t[0] == 'R')
+        store->vector_real_change(t);
+}
+
+void vcdListener::enterVar(antlrvcdp::vcdParser::VarContext* ctx) {
+    store->add_var(new Var(extract_inner(ctx->getText(), "$var")));
 }
 
 void vcdListener::enterScope(antlrvcdp::vcdParser::ScopeContext* ctx) {

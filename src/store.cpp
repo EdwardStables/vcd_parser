@@ -4,6 +4,93 @@
 #include <iterator>
 #include <sstream>
 
+BinaryStore::BinaryStore(std::string bit_string) {
+    size = bit_string.size();
+    for (int i = size-1; i >= 0; i--){
+        char c = bit_string[i];
+        if (c == 'x' || c == 'X'){
+            b_vector.push_back(false);
+            x_vector.push_back(true);
+            z_vector.push_back(false);
+        } else
+        if (c == 'z' || c == 'Z'){
+            b_vector.push_back(false);
+            x_vector.push_back(false);
+            z_vector.push_back(true);
+        } else
+        if (c == '0'){
+            b_vector.push_back(false);
+            x_vector.push_back(false);
+            z_vector.push_back(false);
+        } else
+        if (c == '1'){
+            b_vector.push_back(true);
+            x_vector.push_back(false);
+            z_vector.push_back(false);
+        }
+    }
+}
+
+BinaryStore::BinaryStore(int size, char def) {
+    this->size = size;
+    for (int i = 0; i < size; i++){
+        if (def == 'x' || def == 'X'){
+            b_vector.push_back(false);
+            x_vector.push_back(true);
+            z_vector.push_back(false);
+        } else
+        if (def == 'z' || def == 'Z'){
+            b_vector.push_back(false);
+            x_vector.push_back(false);
+            z_vector.push_back(true);
+        } else
+        if (def == '0'){
+            b_vector.push_back(false);
+            x_vector.push_back(false);
+            z_vector.push_back(false);
+        } else
+        if (def == '1'){
+            b_vector.push_back(true);
+            x_vector.push_back(false);
+            z_vector.push_back(false);
+        }
+    }
+}
+
+std::string BinaryStore::as_string() {
+    std::string out;
+    for (int i=size-1; i >= 0; i--){
+        out += char_at(i);
+    }
+    return out;
+}
+
+char BinaryStore::char_at(int ind) {
+    auto [b, x, z] = at(ind);
+    if (x) return 'x';
+    if (z) return 'z';
+    if (b) return '1';
+    return '0';
+}
+
+bool BinaryStore::b_at(int ind) {
+    auto [b, x, z] = at(ind);
+    if (x || z) return false;
+    return b;
+}
+
+bool BinaryStore::x_at(int ind) {
+    return std::get<1>(at(ind));
+}
+
+bool BinaryStore::z_at(int ind) {
+    return std::get<2>(at(ind));
+}
+
+std::tuple<bool,bool,bool> BinaryStore::at(int ind) {
+    return {b_vector[ind], x_vector[ind], z_vector[ind]};
+}
+
 std::vector<std::string> split_inner(std::string s, std::string header, int expected) {
     //https://stackoverflow.com/a/5607650
     std::stringstream ss(s);
@@ -165,4 +252,23 @@ std::string Scope::format_heirarchy(int indent) {
 
 Scope* Store::get_top() { 
     return top_scope;
+}
+
+void Store::scalar_binary_change(std::string val){
+    BinaryStore b(1, val[0]);
+    std::cout << val.substr(1) << " is " << b.as_string() << std::endl;
+}
+
+void Store::vector_binary_change(std::string val){
+    auto vec_id = split_inner(val, "Binary Vector", 2);
+    std::string vec = vec_id[0];
+    std::string id = vec_id[1];
+
+
+    BinaryStore b(vec.substr(1));
+    std::cout << id << " is " << b.as_string() << std::endl;
+}
+
+void Store::vector_real_change(std::string val) {
+    std::cout << "real not implemented" << std::endl;
 }
