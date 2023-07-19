@@ -30,8 +30,9 @@ void vcdListener::enterScope(antlrvcdp::vcdParser::ScopeContext* ctx) {
     assert(str.substr(str.size()-4, 4) == "$end");
 
     Scope* s = new Scope(str.substr(7, str.size()-7-5));
+    store->down_scope(s);
 }
 
 void vcdListener::enterUpScope(antlrvcdp::vcdParser::UpScopeContext* ctx) {
-
+    store->up_scope();
 }

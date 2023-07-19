@@ -40,5 +40,6 @@ int main() {
     a4::tree::ParseTreeWalker walker;
     walker.walk(listener, parser->value_change_dump_definitions());
 
+    std::cout << store->get_top()->format_heirarchy() << std::endl;
     return 0;
 }

@@ -14,10 +14,11 @@ struct Scope {
     };
     Type type; 
     std::string name;
-    Scope* parent_scope;
+    Scope* parent_scope = nullptr;
     std::unordered_map<std::string,Scope*> child_scopes;
     std::unordered_map<std::string,Var*> identifier_to_var;
     Scope(std::string);
+    std::string format_heirarchy(int indent=0);
 };
 
 struct Var {
@@ -46,4 +47,5 @@ public:
     void down_scope(Scope* scope);
     void up_scope();
     void add_var(Var*);
+    Scope* get_top();
 };
