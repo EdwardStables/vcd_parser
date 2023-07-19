@@ -41,13 +41,14 @@ Dumpon:     '$dumpon';
 Dumpvars:   '$dumpvars';  
 
 
-value_change: ScalarChange | vector_change; 	    
+value_change: scalar_change | vector_change; 	    
 
-ScalarChange: [01xXzZ][\u0021-\u007e];
 vector_change: VectorBinary | VectorReal;
+scalar_change: ScalarChange;
 
-VectorBinary: [bB][01xXzR]+ ' ' [\u0021-\u007e] ;
-VectorReal: [rR][0-9]+'.'[0-9]+ | [0-9]+'e'('+'|'-')[0-9]+ ' '[\u0021-\u007e];
+ScalarChange: [01xXzZ][\u0021-\u007e]+;
+VectorBinary: [bB][01xXzR]+ ' ' [\u0021-\u007e]+ ;
+VectorReal: [rR][0-9]+'.'[0-9]+ | [0-9]+'e'('+'|'-')[0-9]+ ' '[\u0021-\u007e]+;
 
 Simulation: '#' DecimalNumber;
 DecimalNumber: [1-9][0-9]* | '0';
