@@ -34,15 +34,18 @@ struct Var {
     Type type;
     std::string identifier_code;
     std::string identifier;
-    int msb;
-    int lsb;
+    bool identifier_indexed = false;
+    int size; //actual width
+    int msb; //variable label msb
+    int lsb; //variable label lsb
+    Var(std::string);
 };
 
-class Store {
+struct Store {
     Scope* top_scope=nullptr;
     Scope* current_scope=nullptr;
     std::unordered_map<std::string,Var*> identifier_code_to_var;
-public:
+
     Store() = default;
     void down_scope(Scope* scope);
     void up_scope();

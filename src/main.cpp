@@ -1,4 +1,3 @@
-#include "main.h"
 #include <iostream>
 #include "antlr4-runtime.h"
 #include "vcdParser.h"
@@ -26,7 +25,7 @@ std::string read_file(const std::filesystem::path path){
 }
 
 int main() {
-    std::string content = read_file("../samples/scoping_example.vcd");
+    std::string content = read_file("../samples/spec_example.vcd");
     a4::ANTLRInputStream* input_stream = new a4::ANTLRInputStream(content);
     antlrvcdp::vcdLexer* lexer = new antlrvcdp::vcdLexer(input_stream);
     a4::CommonTokenStream* tokenstream = new a4::CommonTokenStream(lexer);
@@ -41,5 +40,16 @@ int main() {
     walker.walk(listener, parser->value_change_dump_definitions());
 
     std::cout << store->get_top()->format_heirarchy() << std::endl;
+    for (auto [s, v] : store->identifier_code_to_var){
+        std::cout << s << " ";
+        std::cout << v->identifier_code << " ";
+        std::cout << v->identifier << " ";
+        std::cout << v->size << " ";
+        if (v->identifier_indexed){
+            std::cout << v->msb << " ";
+            std::cout << v->lsb << " ";
+        }
+        std::cout << std::endl;
+    }
     return 0;
 }
