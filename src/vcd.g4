@@ -46,11 +46,12 @@ value_change: scalar_change | vector_change;
 vector_change: VectorBinary | VectorReal;
 scalar_change: ScalarChange;
 
-ScalarChange: [01xXzZ][\u0021-\u007e]+;
-VectorBinary: [bB][01xXzR]+ ' ' [\u0021-\u007e]+ ;
-VectorReal: [rR][0-9]+'.'[0-9]+ | [0-9]+'e'('+'|'-')[0-9]+ ' '[\u0021-\u007e]+;
+ScalarChange: [01xXzZ] Identifier;
+VectorBinary: [bB][01xXzR]+ ' ' Identifier;
+VectorReal: [rR][0-9]+'.'[0-9]+ | [0-9]+'e'('+'|'-')[0-9]+ ' ' Identifier+;
 
 Simulation: '#' DecimalNumber;
 DecimalNumber: [1-9][0-9]* | '0';
 
+Identifier: [\u0021-\u007e]+;
 Whitespace: [ \t\r\n]+ -> skip;
