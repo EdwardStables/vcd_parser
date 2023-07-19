@@ -6,6 +6,7 @@
 #include "listener.h"
 #include <fstream>
 #include <filesystem>
+#include "store.h"
 
 namespace a4 = antlr4;
 
@@ -25,7 +26,7 @@ std::string read_file(const std::filesystem::path path){
 }
 
 int main() {
-    std::string content = read_file("samples/wikipedia_example.vcd");
+    std::string content = read_file("../samples/spec_example.vcd");
     a4::ANTLRInputStream* input_stream = new a4::ANTLRInputStream(content);
     antlrvcdp::vcdLexer* lexer = new antlrvcdp::vcdLexer(input_stream);
     a4::CommonTokenStream* tokenstream = new a4::CommonTokenStream(lexer);
@@ -33,8 +34,10 @@ int main() {
 
     antlrvcdp::vcdParser* parser = new antlrvcdp::vcdParser(tokenstream);
 
+    Store* store = new Store();
+    vcdListener* listener = new vcdListener(store);
+
     a4::tree::ParseTreeWalker walker;
-    vcdListener* listener = new vcdListener();
     walker.walk(listener, parser->value_change_dump_definitions());
 
     return 0;

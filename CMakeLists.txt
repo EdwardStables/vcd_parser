@@ -21,12 +21,13 @@ antlr4cpp_one_file_process(vcdp ${ANTLR4NAMESPACE}
 add_executable(vcdp
     src/main.cpp
     src/listener.cpp
+    src/store.cpp
     ${antlr4cpp_src_files_${ANTLR4NAMESPACE}}
 )
 
 target_include_directories( vcdp
   PRIVATE headers
-  PRIVATE antlr4cpp_generated_src/${ANTLR4NAMESPACE}
+  PRIVATE build/antlr4cpp_generated_src/${ANTLR4NAMESPACE}
 )
 add_dependencies(vcdp
   antlr4cpp
