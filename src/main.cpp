@@ -51,5 +51,10 @@ int main() {
         }
         std::cout << std::endl;
     }
+
+    for (int i = 0; i < 2500; i+=10){
+        std::cout << i << " " << store->value_at("*$", i)->as_string() << "\n";
+    }
+
     return 0;
 }

@@ -3,6 +3,9 @@
 #include <vector>
 #include <math.h>
 #include "util.h"
+#include <map>
+#include <iterator>
+#include <assert.h>
 
 BitVector::BitVector(uint16_t size, std::string bit_string) : size(size) {
     for (int i = 0; i < size; i++){
@@ -10,6 +13,12 @@ BitVector::BitVector(uint16_t size, std::string bit_string) : size(size) {
     }
 
     set(bit_string);
+}
+
+BitVector::BitVector(uint16_t size, Bit value) : size(size) {
+    for (int i = 0; i < size; i++){
+        bits.push_back(value);
+    }
 }
 
 void BitVector::set(std::string bit_string){
@@ -153,6 +162,29 @@ Var::Var(std::string var_str){
     lsb = std::stoi(bracket_inner.substr(bracket_inner_colon+1));
 }
 
+void Var::add_value(uint64_t time, BitVector* value) {
+    values.insert({time, value});
+}
+
+BitVector* Var::value_at(uint64_t time){
+    auto geq = values.lower_bound(time);
+
+    //time is beyond the final value
+    if (geq == values.end()){
+        return values.rbegin()->second;//return the final value
+    }
+
+    //implies that the first value in the map is not at time zero
+    if(geq == values.begin()){
+        BitVector* xv = new BitVector(size, BitVector::Bit::X);
+        add_value(0, xv);
+        return xv;
+    }
+
+    //lower bound gives the value after, we want the value before
+    return std::prev(geq)->second;
+}
+
 Scope::Scope(std::string scope_str){
 
     std::vector<std::string> inner = split_inner(scope_str, "$scope", 2);
@@ -245,10 +277,11 @@ void Store::scalar_binary_change(std::string val){
         return;
     }
 
-    int size = identifier_code_to_var[id]->size;
-    BitVector b(size, val.substr(0,1));
+    Var* var = identifier_code_to_var[id];
+    int size = var->size;
+    BitVector* b = new BitVector(size, val.substr(0,1));
 
-    std::cout << val.substr(1) << " is " << b.as_string() << std::endl;
+    var->add_value(current_time, b);
 }
 
 void Store::vector_binary_change(std::string val){
@@ -261,12 +294,18 @@ void Store::vector_binary_change(std::string val){
         return;
     }
 
-    int size = identifier_code_to_var[id]->size;
-
-    BitVector b(size, vec.substr(1));
-    std::cout << id << " is " << b.as_string() << std::endl;
+    Var* var = identifier_code_to_var[id];
+    int size = var->size;
+    BitVector* b = new BitVector(size, vec.substr(1));
+    var->add_value(current_time, b);
 }
 
 void Store::vector_real_change(std::string val) {
     std::cout << "real not implemented" << std::endl;
+}
+
+BitVector* Store::value_at(std::string identifier_code, uint64_t time) {
+    if (!identifier_code_to_var.count(identifier_code)) return nullptr;
+
+    return identifier_code_to_var[identifier_code]->value_at(time);
 }

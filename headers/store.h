@@ -3,6 +3,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <map>
 
 struct BitVector{
     enum class Bit {
@@ -16,6 +17,7 @@ private:
 public:
     BitVector(uint16_t size, std::string bit_string);
     BitVector(uint16_t size, uint64_t number);
+    BitVector(uint16_t size, Bit value);
     std::string as_string() const;
     char char_at(int ind) const;
     uint16_t width() const { return size; }
@@ -63,7 +65,12 @@ struct Var {
     int size; //actual width
     int msb; //variable label msb
     int lsb; //variable label lsb
+
+    std::map<uint64_t,BitVector*> values;
+
     Var(std::string);
+    void add_value(uint64_t time, BitVector* value);
+    BitVector* value_at(uint64_t time);
 };
 
 struct Store {
@@ -81,4 +88,6 @@ struct Store {
     void scalar_binary_change(std::string);
     void vector_binary_change(std::string val);
     void vector_real_change(std::string val);
+
+    BitVector* value_at(std::string identifier_code, uint64_t time);
 };
