@@ -13,12 +13,12 @@ message(STATUS "Found antlr4cpp libs: ${ANTLR4CPP_LIBS} and includes: ${ANTLR4CP
 
 set(ANTLR4NAMESPACE antlrvcdp)
 
-antlr4cpp_one_file_process(vcdp ${ANTLR4NAMESPACE}
+antlr4cpp_one_file_process(vcd_parse ${ANTLR4NAMESPACE}
   ${CMAKE_CURRENT_SOURCE_DIR}/src/vcd.g4
   vcd
 )
 
-add_library(vcdp STATIC
+add_library(vcd_parse STATIC
     #src/main.cpp #example usage
     src/parser.cpp
     src/store.cpp
@@ -26,15 +26,15 @@ add_library(vcdp STATIC
     ${antlr4cpp_src_files_${ANTLR4NAMESPACE}}
 )
 
-target_include_directories( vcdp
+target_include_directories( vcd_parse
   PUBLIC include
   PRIVATE headers
-  PRIVATE build/antlr4cpp_generated_src/${ANTLR4NAMESPACE}
+  PRIVATE antlr4cpp_generated_src/${ANTLR4NAMESPACE}
 )
 
-add_dependencies(vcdp
+add_dependencies(vcd_parse
   antlr4cpp
   antlr4cpp_generation_${ANTLR4NAMESPACE}
 )
-target_link_libraries(vcdp antlr4-runtime)
+target_link_libraries(vcd_parse antlr4-runtime)
 
