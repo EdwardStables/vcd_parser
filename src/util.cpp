@@ -3,6 +3,22 @@
 #include <iostream>
 #include <sstream>
 #include <assert.h>
+#include <fstream>
+
+std::string read_file(const std::filesystem::path path){
+    std::ifstream inf{path};
+
+
+    if (!inf){
+        std::cerr << "Could not open file " << path << " for reading." << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    std::stringstream buffer;
+    buffer << inf.rdbuf();
+
+    return buffer.str();
+}
 
 std::vector<std::string> split_inner(std::string s, std::string header, int expected) {
     //https://stackoverflow.com/a/5607650

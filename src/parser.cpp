@@ -1,7 +1,30 @@
-#include "listener.h"
+#include "parser.h"
 #include <iostream>
 #include <assert.h>
 #include "util.h"
+#include "antlr4-runtime.h"
+#include "vcdParser.h"
+#include "vcdLexer.h"
+#include "parser.h"
+
+namespace a4 = antlr4;
+
+Store* build_store(std::string file) {
+    std::string content = read_file(file);
+    a4::ANTLRInputStream* input_stream = new a4::ANTLRInputStream(content);
+    antlrvcdp::vcdLexer* lexer = new antlrvcdp::vcdLexer(input_stream);
+    a4::CommonTokenStream* tokenstream = new a4::CommonTokenStream(lexer);
+    tokenstream->fill();
+
+    antlrvcdp::vcdParser* parser = new antlrvcdp::vcdParser(tokenstream);
+
+    Store* store = new Store();
+    vcdListener* listener = new vcdListener(store);
+
+    a4::tree::ParseTreeWalker walker;
+    walker.walk(listener, parser->value_change_dump_definitions());
+    return store;
+}
 
 vcdListener::vcdListener(Store* store)
     : store(store)
@@ -9,18 +32,6 @@ vcdListener::vcdListener(Store* store)
 
 }
 
-
-//void vcdListener::enterValue_change_dump_definitions(antlrvcdp::vcdParser::Value_change_dump_definitionsContext* ctx){
-//}
-//
-//void vcdListener::enterDeclaration_command(antlrvcdp::vcdParser::Declaration_commandContext* ctx){
-//}
-//
-//void vcdListener::enterSimulation_command(antlrvcdp::vcdParser::Simulation_commandContext* ctx){
-//}
-//
-//void vcdListener::enterSimulation_directive(antlrvcdp::vcdParser::Simulation_directiveContext* ctx){
-//}
 void vcdListener::enterScalar_change(antlrvcdp::vcdParser::Scalar_changeContext* ctx) {
     store->scalar_binary_change(ctx->getText());
 }

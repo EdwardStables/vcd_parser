@@ -20,7 +20,7 @@ antlr4cpp_one_file_process(vcdp ${ANTLR4NAMESPACE}
 
 add_executable(vcdp
     src/main.cpp
-    src/listener.cpp
+    src/parser.cpp
     src/store.cpp
     src/util.cpp
     ${antlr4cpp_src_files_${ANTLR4NAMESPACE}}
