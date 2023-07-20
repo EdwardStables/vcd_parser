@@ -106,10 +106,22 @@ Var::Var(std::string var_str){
     if (vtype == "real") {
         type = Type::REAL;
     } else
-    if (vtype == "reg") {
+    if (vtype == "reg" || vtype == "trireg") {
         type = Type::REG;
     } else
-    if (vtype == "wire") {
+    if (
+        vtype == "wire" || vtype == "wand" || vtype == "wor" ||
+        vtype == "tri" || vtype == "triand" || vtype == "trior" ||
+        vtype == "tri0" || vtype == "tri1"
+    ) {
+        type = Type::WIRE;
+    } else
+    if (
+        vtype == "event" || vtype == "realtime" ||
+        vtype == "supply0" || vtype == "supply1" ||
+        vtype == "time"
+    ) {
+        std::cerr << "Use of known but unsupported variable type '" << vtype << "'. Setting to wire.\n";
         type = Type::WIRE;
     } else {
         std::cerr << "Use of unknown variable type '" << vtype << "'. Setting to wire.\n";
