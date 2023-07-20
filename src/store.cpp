@@ -3,39 +3,68 @@
 #include <vector>
 #include <iterator>
 #include <sstream>
+#include <math.h>
 
-BinaryStore::BinaryStore(int _size, std::string bit_string) : size(_size) {
+BitVector::BitVector(uint16_t size, std::string bit_string) : size(size) {
+    for (int i = 0; i < size; i++){
+        bits.push_back(Bit::X);
+    }
+
+    set(bit_string);
+}
+
+void BitVector::set(std::string bit_string){
     while (bit_string.size() < size){
         bit_string = '0' + bit_string;
     }
 
-    for (int i = size-1; i >= 0; i--){
-        char c = bit_string[i];
-        if (c == 'x' || c == 'X'){
-            b_vector.push_back(false);
-            x_vector.push_back(true);
-            z_vector.push_back(false);
-        } else
-        if (c == 'z' || c == 'Z'){
-            b_vector.push_back(false);
-            x_vector.push_back(false);
-            z_vector.push_back(true);
-        } else
-        if (c == '0'){
-            b_vector.push_back(false);
-            x_vector.push_back(false);
-            z_vector.push_back(false);
-        } else
-        if (c == '1'){
-            b_vector.push_back(true);
-            x_vector.push_back(false);
-            z_vector.push_back(false);
-        }
+    for (int i = 0; i < size; i++){
+        char c = bit_string[size-1-i];
+        if (c == 'x' || c == 'X')
+            bits[i] = Bit::X;
+        else if (c == 'z' || c == 'Z')
+            bits[i] = Bit::Z;
+        else if (c == '0')
+            bits[i] = Bit::_0;
+        else if (c == '1')
+            bits[i] = Bit::_1;
     }
 }
 
+BitVector::BitVector(uint16_t size, uint64_t number) : size(size) {
+    for (int i = 0; i < size; i++){
+        bits.push_back(Bit::X);
+    }
 
-std::string BinaryStore::as_string() {
+    set(number);
+}
+
+void BitVector::set(uint64_t number) {
+    uint64_t max = pow(2, size)-1;
+    if (number > max){
+        number = max;
+    }
+
+    unsigned long long mask = 1;
+    for (int i = 0; i < size; i++){
+        if (mask & number){
+            bits[i] = Bit::_1;
+        } else {
+            bits[i] = Bit::_0;
+        }
+
+        mask <<= 1;
+    }
+}
+
+void BitVector::set_bit(size_t ind, BitVector::Bit value) {
+    if (ind >= size) return;
+
+    bits[ind] = value;
+}
+
+
+std::string BitVector::as_string() const {
     std::string out;
     for (int i=size-1; i >= 0; i--){
         out += char_at(i);
@@ -43,30 +72,14 @@ std::string BinaryStore::as_string() {
     return out;
 }
 
-char BinaryStore::char_at(int ind) {
-    auto [b, x, z] = at(ind);
-    if (x) return 'x';
-    if (z) return 'z';
-    if (b) return '1';
-    return '0';
-}
-
-bool BinaryStore::b_at(int ind) {
-    auto [b, x, z] = at(ind);
-    if (x || z) return false;
-    return b;
-}
-
-bool BinaryStore::x_at(int ind) {
-    return std::get<1>(at(ind));
-}
-
-bool BinaryStore::z_at(int ind) {
-    return std::get<2>(at(ind));
-}
-
-std::tuple<bool,bool,bool> BinaryStore::at(int ind) {
-    return {b_vector[ind], x_vector[ind], z_vector[ind]};
+char BitVector::char_at(int ind) const {
+    switch(bits[ind]){
+        case Bit::Z: return 'z';
+        case Bit::_0: return '0';
+        case Bit::_1: return '1';
+        //case Bit::X
+        default: return 'x';
+    }
 }
 
 std::vector<std::string> split_inner(std::string s, std::string header, int expected) {
@@ -253,7 +266,7 @@ void Store::scalar_binary_change(std::string val){
     }
 
     int size = identifier_code_to_var[id]->size;
-    BinaryStore b(size, val.substr(0,1));
+    BitVector b(size, val.substr(0,1));
 
     std::cout << val.substr(1) << " is " << b.as_string() << std::endl;
 }
@@ -270,7 +283,7 @@ void Store::vector_binary_change(std::string val){
 
     int size = identifier_code_to_var[id]->size;
 
-    BinaryStore b(size, vec.substr(1));
+    BitVector b(size, vec.substr(1));
     std::cout << id << " is " << b.as_string() << std::endl;
 }
 

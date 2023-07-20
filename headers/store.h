@@ -4,23 +4,27 @@
 #include <tuple>
 #include <vector>
 
-//TODO: probably refactor to a template?
-struct BinaryStore {
-    std::vector<bool> b_vector;
-    std::vector<bool> x_vector;
-    std::vector<bool> z_vector;
-    int size;
-
-    BinaryStore(int size, std::string bit_string);
-    std::string as_string();
-    char char_at(int ind);
-    bool b_at(int ind);
-    bool x_at(int ind);
-    bool z_at(int ind);
+struct BitVector{
+    enum class Bit {
+        Z, X, _1, _0
+    };
 
 private:
-    //b, x, z
-    std::tuple<bool,bool,bool> at(int ind);
+    const uint16_t size;
+    std::vector<Bit> bits;
+
+public:
+    BitVector(uint16_t size, std::string bit_string);
+    BitVector(uint16_t size, uint64_t number);
+    std::string as_string() const;
+    char char_at(int ind) const;
+    uint16_t width() const { return size; }
+
+    void set(std::string bit_string);
+    void set(uint64_t number);
+    void set_bit(size_t ind, Bit value);
+
+    BitVector::Bit& operator [](uint16_t i) {return bits[i];}
 };
 
 struct Var;
