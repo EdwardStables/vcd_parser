@@ -182,7 +182,14 @@ BitVector* Var::value_at(uint64_t time){
     }
 
     //lower bound gives the value after, we want the value before
-    return std::prev(geq)->second;
+    BitVector* v;
+    if (geq->first == time){
+        v = geq->second;
+    } else {
+        v = std::prev(geq)->second;
+    }
+
+    return v;
 }
 
 Scope::Scope(std::string scope_str){
