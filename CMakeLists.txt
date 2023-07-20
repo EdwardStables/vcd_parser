@@ -18,8 +18,8 @@ antlr4cpp_one_file_process(vcdp ${ANTLR4NAMESPACE}
   vcd
 )
 
-add_executable(vcdp
-    src/main.cpp
+add_library(vcdp STATIC
+    #src/main.cpp #example usage
     src/parser.cpp
     src/store.cpp
     src/util.cpp
