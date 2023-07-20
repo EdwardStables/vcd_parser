@@ -1,15 +1,7 @@
 #include "listener.h"
 #include <iostream>
 #include <assert.h>
-
-std::string extract_inner(std::string full_text, std::string header){
-    int hsize = header.size();
-
-    assert(full_text.substr(0, hsize) == header);
-    assert(full_text.substr(full_text.size()-4, 4) == "$end");
-
-    return full_text.substr(hsize + 1, full_text.size()-hsize-1-5);
-}
+#include "util.h"
 
 vcdListener::vcdListener(Store* store)
     : store(store)
@@ -51,4 +43,9 @@ void vcdListener::enterScope(antlrvcdp::vcdParser::ScopeContext* ctx) {
 
 void vcdListener::enterUpScope(antlrvcdp::vcdParser::UpScopeContext* ctx) {
     store->up_scope();
+}
+
+void vcdListener::enterTime_update(antlrvcdp::vcdParser::Time_updateContext* ctx) {
+    auto s = ctx->getText();
+    store->set_time(std::stoi(s.substr(1)));
 }

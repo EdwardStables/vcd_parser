@@ -22,6 +22,7 @@ add_executable(vcdp
     src/main.cpp
     src/listener.cpp
     src/store.cpp
+    src/util.cpp
     ${antlr4cpp_src_files_${ANTLR4NAMESPACE}}
 )
 

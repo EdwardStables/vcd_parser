@@ -70,12 +70,14 @@ struct Store {
     Scope* top_scope=nullptr;
     Scope* current_scope=nullptr;
     std::unordered_map<std::string,Var*> identifier_code_to_var;
+    uint64_t current_time = 0;
 
     Store() = default;
     void down_scope(Scope* scope);
     void up_scope();
     void add_var(Var*);
-    Scope* get_top();
+    Scope* get_top();  
+    void set_time(uint64_t time) {current_time = time;}
     void scalar_binary_change(std::string);
     void vector_binary_change(std::string val);
     void vector_real_change(std::string val);

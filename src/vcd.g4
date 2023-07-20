@@ -15,7 +15,7 @@ version:    Version;
 simulation_command:
     simulation_directive
   | comment
-  | Simulation
+  | time_update 
   | value_change;
 
 simulation_directive: simulation_keyword value_change* End;
@@ -23,6 +23,8 @@ simulation_keyword: Dumpall
                   | Dumpoff
                   | Dumpon
                   | Dumpvars;
+
+time_update: Simulation;
 
 End: '$end';
 

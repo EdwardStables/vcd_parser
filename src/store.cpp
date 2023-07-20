@@ -1,9 +1,8 @@
 #include "store.h"
 #include <iostream>
 #include <vector>
-#include <iterator>
-#include <sstream>
 #include <math.h>
+#include "util.h"
 
 BitVector::BitVector(uint16_t size, std::string bit_string) : size(size) {
     for (int i = 0; i < size; i++){
@@ -80,25 +79,6 @@ char BitVector::char_at(int ind) const {
         //case Bit::X
         default: return 'x';
     }
-}
-
-std::vector<std::string> split_inner(std::string s, std::string header, int expected) {
-    //https://stackoverflow.com/a/5607650
-    std::stringstream ss(s);
-    std::istream_iterator<std::string> begin(ss);
-    std::istream_iterator<std::string> end;
-    std::vector<std::string> vstrings(begin, end);
-
-    if (vstrings.size() < expected){
-        std::cerr << header + " declaration is missing expected content." << std::endl;
-        exit(1);
-    }
-
-    if (vstrings.size() > expected){
-        std::cerr << header + " declaration has unexpected content. Ignoring extra." << std::endl;
-    }
-
-    return vstrings;
 }
 
 Var::Var(std::string var_str){
