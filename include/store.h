@@ -91,3 +91,5 @@ struct Store {
 
     BitVector* value_at(std::string identifier_code, uint64_t time);
 };
+
+Store* build_store(std::string file);

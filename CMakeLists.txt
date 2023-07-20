@@ -27,9 +27,11 @@ add_executable(vcdp
 )
 
 target_include_directories( vcdp
+  PUBLIC include
   PRIVATE headers
   PRIVATE build/antlr4cpp_generated_src/${ANTLR4NAMESPACE}
 )
+
 add_dependencies(vcdp
   antlr4cpp
   antlr4cpp_generation_${ANTLR4NAMESPACE}

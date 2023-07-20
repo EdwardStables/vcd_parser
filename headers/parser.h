@@ -5,8 +5,6 @@
 #include "antlr4-runtime.h"
 #include "store.h"
 
-Store* build_store(std::string file);
-
 class vcdListener : public antlrvcdp::vcdBaseListener {
   Store* store;  
   virtual void enterTime_update(antlrvcdp::vcdParser::Time_updateContext*) override;

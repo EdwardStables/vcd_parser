@@ -6,6 +6,36 @@
 #include <map>
 #include <iterator>
 #include <assert.h>
+#include "antlr4-runtime.h"
+#include "vcdParser.h"
+#include "vcdLexer.h"
+#include "parser.h"
+
+namespace a4 = antlr4;
+
+Store* build_store(std::string file) {
+    std::string content = read_file(file);
+    a4::ANTLRInputStream* input_stream = new a4::ANTLRInputStream(content);
+    antlrvcdp::vcdLexer* lexer = new antlrvcdp::vcdLexer(input_stream);
+    a4::CommonTokenStream* tokenstream = new a4::CommonTokenStream(lexer);
+    tokenstream->fill();
+
+    antlrvcdp::vcdParser* parser = new antlrvcdp::vcdParser(tokenstream);
+
+    Store* store = new Store();
+    vcdListener* listener = new vcdListener(store);
+
+    a4::tree::ParseTreeWalker walker;
+    walker.walk(listener, parser->value_change_dump_definitions());
+    return store;
+}
+
+vcdListener::vcdListener(Store* store)
+    : store(store)
+{
+
+}
+
 
 BitVector::BitVector(uint16_t size, std::string bit_string) : size(size) {
     for (int i = 0; i < size; i++){
