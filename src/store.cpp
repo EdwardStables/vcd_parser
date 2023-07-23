@@ -285,6 +285,8 @@ void Store::add_var(Var* v) {
         exit(1);
     }
 
+    v->scope = current_scope;
+    current_scope->identifier_to_var[v->identifier] = v;
     identifier_code_to_var[v->identifier_code] = v;
 }
 
