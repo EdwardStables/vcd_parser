@@ -26,7 +26,7 @@ public:
     void set(uint64_t number);
     void set_bit(size_t ind, Bit value);
 
-    BitVector::Bit& operator [](uint16_t i) {return bits[i];}
+    const Bit& operator [](size_t i) const {return bits[i];}
 };
 
 struct Var;
