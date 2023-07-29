@@ -53,7 +53,18 @@ BitVector::BitVector(uint16_t size, Bit value) : size(size) {
 
 void BitVector::set(std::string bit_string){
     while (bit_string.size() < size){
-        bit_string = '0' + bit_string;
+        switch (bit_string[0]){
+            case 'x':
+            case 'X':
+                bit_string = 'x' + bit_string;
+                break;
+            case 'z':
+            case 'Z':
+                bit_string = 'z' + bit_string;
+                break;
+            default:
+                bit_string = '0' + bit_string;
+        }
     }
 
     for (int i = 0; i < size; i++){
