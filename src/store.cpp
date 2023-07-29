@@ -102,12 +102,47 @@ void BitVector::set_bit(size_t ind, BitVector::Bit value) {
 }
 
 
-std::string BitVector::as_string() const {
+std::string BitVector::as_bit_string() const {
     std::string out;
     for (int i=size-1; i >= 0; i--){
         out += char_at(i);
     }
     return out;
+}
+
+std::string BitVector::as_hex_string() const {
+    std::string out;
+    for (int i = 0; i < bits.size(); i+=4){
+        out = hex_char_at(i) + out;
+    }
+
+    return out;
+}
+
+char BitVector::hex_char_at(int index) const {
+    int range_bottom = 4 * (index / 4);
+    int ind = 0;
+    int res = 0;
+    bool has_z = false;
+    for (int i = range_bottom; i < range_bottom + 4; i++){
+        if (i >= bits.size()) break;
+        if (bits[i] == Bit::X) return 'x';
+        if (bits[i] == Bit::Z) has_z = true;
+        if (bits[i] == Bit::_1) res += (1 << ind);
+        ind++;
+    }
+
+    if (has_z) return 'z';
+
+    if (res < 10){
+        return char(res + 48); //integer ascii range
+    } else
+    if (res < 16){
+        return (char(res - 10 + 97)); //lower case ascii range
+    } else {
+        assert(false);
+    }
+
 }
 
 char BitVector::char_at(int ind) const {
