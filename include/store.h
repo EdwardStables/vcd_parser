@@ -73,6 +73,8 @@ struct Var {
     Var(std::string);
     void add_value(uint64_t time, BitVector* value);
     BitVector* value_at(uint64_t time);
+    uint64_t change_before_time(uint64_t time);
+    uint64_t change_after_time(uint64_t time);
 };
 
 struct Store {

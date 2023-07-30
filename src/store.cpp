@@ -268,6 +268,29 @@ BitVector* Var::value_at(uint64_t time){
     return v;
 }
 
+uint64_t Var::change_before_time(uint64_t time) {
+    auto prev_time = values.lower_bound(time);
+
+    //lower bound will return the value after time
+    //if time is not a member of the value map
+    if (prev_time->first > time){
+        prev_time = std::prev(prev_time, 1);
+    }
+
+    if (prev_time->first == time && prev_time != values.begin()){
+        prev_time = std::prev(prev_time, 1);
+    }
+    return prev_time->first;
+}
+
+uint64_t Var::change_after_time(uint64_t time) {
+    if (time == std::prev(values.end(), 1)->first){
+        return time;
+    }
+    auto next_time = values.upper_bound(time);
+    return next_time->first;
+}
+
 Scope::Scope(std::string scope_str){
 
     std::vector<std::string> inner = split_inner(scope_str, "$scope", 2);
