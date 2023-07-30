@@ -112,6 +112,12 @@ void BitVector::set_bit(size_t ind, BitVector::Bit value) {
     bits[ind] = value;
 }
 
+const BitVector::Bit& BitVector::operator[](size_t i) const {
+    return bits[i];
+}
+const bool BitVector::operator==(const BitVector& rhs) const {
+    return size == rhs.size && bits == rhs.bits;
+}
 
 std::string BitVector::as_bit_string() const {
     std::string out;
@@ -164,6 +170,10 @@ char BitVector::char_at(int ind) const {
         //case Bit::X
         default: return 'x';
     }
+}
+
+bool BitVector::is_fully_x() const {
+    return std::all_of(bits.begin(), bits.end(), [](Bit b){return b == Bit::X;});
 }
 
 Var::Var(std::string var_str){
@@ -239,7 +249,31 @@ Var::Var(std::string var_str){
 }
 
 void Var::add_value(uint64_t time, BitVector* value) {
+    //no point in storing the same values
+    if (values.size()){
+        BitVector* prev_value = std::prev(values.end(),1)->second;
+        if (*prev_value == *value)
+            return;
+    }
+
     values.insert({time, value});
+}
+
+/* If the first value is x then move it to time zero. 
+
+Otherwise insert an x at time zero
+*/
+void Var::extend_to_zero() {
+    //shouldn't be smaller than zero, but protect against it anyway
+    if (values.begin()->first <= 0) return;
+
+    if (values.begin()->second->is_fully_x()){
+        BitVector* bv = values.begin()->second;
+        values.erase(values.begin()->first);
+        values.insert({0, bv});
+    } else {
+        values.insert({0, new BitVector(size, BitVector::Bit::X)});
+    }
 }
 
 BitVector* Var::value_at(uint64_t time){
@@ -416,4 +450,10 @@ BitVector* Store::value_at(std::string identifier_code, uint64_t time) {
     if (!identifier_code_to_var.count(identifier_code)) return nullptr;
 
     return identifier_code_to_var[identifier_code]->value_at(time);
+}
+
+void Store::extend_all_to_zero() {
+    for (auto& [id, v] : identifier_code_to_var) {
+        v->extend_to_zero();
+    }
 }

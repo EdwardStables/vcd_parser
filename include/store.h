@@ -24,11 +24,14 @@ public:
     char hex_char_at(int ind) const;
     uint16_t width() const { return size; }
 
+    bool is_fully_x() const;
+
     void set(std::string bit_string);
     void set(uint64_t number);
     void set_bit(size_t ind, Bit value);
 
-    const Bit& operator [](size_t i) const {return bits[i];}
+    const Bit& operator[](size_t i) const;
+    const bool operator==(const BitVector& rhs) const;
 };
 
 struct Var;
@@ -75,6 +78,7 @@ struct Var {
     BitVector* value_at(uint64_t time);
     uint64_t change_before_time(uint64_t time);
     uint64_t change_after_time(uint64_t time);
+    void extend_to_zero();
 };
 
 struct Store {
@@ -94,6 +98,7 @@ struct Store {
     void vector_real_change(std::string val);
 
     BitVector* value_at(std::string identifier_code, uint64_t time);
+    void extend_all_to_zero();
 };
 
 Store* build_store(std::string file);
