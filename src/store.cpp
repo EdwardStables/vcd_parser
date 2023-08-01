@@ -457,3 +457,8 @@ void Store::extend_all_to_zero() {
         v->extend_to_zero();
     }
 }
+
+//max time only works after parsing
+int64_t Store::get_max_time() {
+    return current_time;
+}
