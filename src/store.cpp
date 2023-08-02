@@ -324,7 +324,6 @@ uint64_t Var::change_after_time(uint64_t time) {
     auto next_time = values.upper_bound(time);
     return next_time->first;
 }
-
 Scope::Scope(std::string scope_str){
 
     std::vector<std::string> inner = split_inner(scope_str, "$scope", 2);
@@ -351,6 +350,21 @@ Scope::Scope(std::string scope_str){
         type = Type::MODULE;
     }
 }
+
+Scope* Scope::find_scope(std::string query) {
+    if (query == name)
+        return this;
+
+    for (auto& [name, scope] : child_scopes){
+        Scope* found = scope->find_scope(query);
+        if (found != nullptr){
+            return found;
+        }
+    }
+
+    return nullptr;
+}
+
 
 void Store::down_scope(Scope* scope){
     if (top_scope && !current_scope){
@@ -461,4 +475,8 @@ void Store::extend_all_to_zero() {
 //max time only works after parsing
 int64_t Store::get_max_time() {
     return current_time;
+}
+
+Scope* Store::find_scope(std::string query) {
+    return top_scope->find_scope(query);
 }

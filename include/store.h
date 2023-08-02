@@ -51,6 +51,7 @@ struct Scope {
     std::unordered_map<std::string,Var*> identifier_to_var;
     Scope(std::string);
     std::string format_heirarchy(int indent=0);
+    Scope* find_scope(std::string);
 };
 
 struct Var {
@@ -100,6 +101,7 @@ struct Store {
     BitVector* value_at(std::string identifier_code, uint64_t time);
     void extend_all_to_zero();
     int64_t get_max_time();
+    Scope* find_scope(std::string);
 };
 
 Store* build_store(std::string file);
