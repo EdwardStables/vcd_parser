@@ -3,7 +3,7 @@ project(vcd_parser)
 set(CMAKE_CXX_STANDARD 17)
 
 # ANTLR
-set(ANTLR4_VERSION 4.13.0)
+set(ANTLR4_VERSION 4.13.1)
 
 set(ANTLR4CPP_JAR_LOCATION ${PROJECT_SOURCE_DIR}/antlr-${ANTLR4_VERSION}-complete.jar)
 include(Antlr4Cpp.cmake)
@@ -29,7 +29,7 @@ add_library(vcd_parse STATIC
 target_include_directories( vcd_parse
   PUBLIC include
   PRIVATE headers
-  PRIVATE antlr4cpp_generated_src/${ANTLR4NAMESPACE}
+  PRIVATE ${ANTLRGEN}
 )
 
 add_dependencies(vcd_parse
