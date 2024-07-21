@@ -2,6 +2,7 @@
 
 A VCD parser and utility library using Antlr4.
 
+
 ## Building
 
 You must download the antlr complete jar file from https://www.antlr.org/download.html and place it in the root of the repository. The cmake file expects it to be named `antlr-<version>-complete.jar`. `<version>` is set in `CMakeLists.txt`, and defaults to 4.13.0.
